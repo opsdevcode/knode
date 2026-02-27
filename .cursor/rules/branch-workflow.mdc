@@ -1,0 +1,60 @@
+---
+description: Branch workflow and protection rules for contributing to repos in this org
+globs:
+alwaysApply: true
+---
+
+# Branch Workflow and Protection Rules
+
+## Development Workflow
+
+1. **Create a branch from `main`** (or fork and branch)
+2. Make changes locally
+3. Open a pull request
+
+## No Direct Pushes to main
+
+- Direct pushes to `main` are blocked for non-owners
+- All changes to `main` must go through a PR
+- Optional: repos may define `ALLOWED_DIRECT_PUSH_USERS` for bypass exceptions
+
+## Required Checks
+
+PRs must pass required status checks before merging. Common checks include:
+
+- **Version Check** – enforces Conventional Commits and version bump (when applicable)
+- **Direct Push Guard** – blocks direct pushes to main for non-owners
+
+Check names may vary by repo; refer to `CONTRIBUTING.md` or `.github/workflows/` for specifics.
+
+## Conventional Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages:
+
+- `feat:` – new feature (minor bump)
+- `fix:` or `perf:` – bug fix or performance (patch bump)
+- `chore:` – maintenance, dependencies
+- `docs:` – documentation
+- `refactor:` – code refactoring
+- `test:` – tests
+- `ci:` or `build:` – CI/CD or build changes
+
+Add `!` or `BREAKING CHANGE` footer for major version bumps.
+
+## PR Template
+
+PR descriptions must follow the template (typically `.github/PULL_REQUEST_TEMPLATE.md`) with:
+
+- **what** – high-level description of changes
+- **why** – rationale and business case
+- **how** – testing, docs, breaking changes, AI assistant usage
+- **references** – links to issues or docs (e.g. `closes #123`)
+
+## Branch Protection (GitHub Settings)
+
+Repos typically configure branch protection for `main`:
+
+- Require a pull request before merging
+- Require status checks to pass
+- Require branches to be up to date before merging
+- Do not allow bypassing (recommended)
