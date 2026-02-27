@@ -39,3 +39,7 @@ Or run from the repo path (inside the container):
 ```bash
 python -m knode.cli list
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).

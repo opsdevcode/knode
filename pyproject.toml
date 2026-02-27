@@ -8,6 +8,8 @@ version = "0.1.0"
 description = "CLI to cordon and drain EKS nodes"
 readme = "README.md"
 requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Eric Skaggs", email = "ericskaggs@gmail.com" }]
 dependencies = [
   "click>=8.1",
 ]
@@ -20,3 +22,6 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
