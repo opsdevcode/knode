@@ -1,0 +1,254 @@
+---
+description: Core infrastructure context and conventions for 3Play Media infrastructure repository
+globs:
+alwaysApply: true
+---
+
+# Infrastructure Context
+
+## Tool Aliases and Commands
+
+- We use the aliases `tf` for `Terraform`, `atf` for `atmos terraform`, and `k` for `kubectl`. You may use these aliases as well when providing instructions on how to do things. If however you are asked to document a procedure, please spell out the complete commands for additional clarity.
+
+## Git and GitHub Version Control
+
+- We use Git and GitHub for version control. All infrastructure changes should be committed and pushed to GitHub for review and collaboration.
+
+### Branch Naming and Workflow
+
+- **❌ Never commit directly to `main` branch**: Always create a feature branch for your changes.
+- **Branch naming convention**: Use your initials as a prefix followed by an underscore and a brief description of the changes. Use underscores throughout the branch name, not hyphens.
+  - **Initials mapping**:
+    - `je` - Jonathan Eunice (jonathan-3play)
+    - `es` - Eric Skaggs (erskaggs)
+    - `nb` - Nathanael Beisiegel (pk-nb)
+    - `ahs` - Andrew H Schwartz (ozydingo)
+  - Examples:
+    - `je_add_eks_cluster_monitoring` (Jonathan Eunice adding EKS cluster monitoring)
+    - `es_fix_vpc_cidr_allocation` (Eric Skaggs fixing VPC CIDR allocation)
+    - `nb_update_terraform_providers` (Nathanael Beisiegel updating Terraform providers)
+    - `ahs_add_cursor_rules` (Andrew H Schwartz adding cursor rules)
+- **Create branches from main**: Always branch from the latest `main` to ensure you have the most recent changes.
+  ```bash
+  git switch main
+  git pull origin main
+  git switch -c je_your_branch_name
+  ```
+
+### Main Branch Detection and Branch Creation
+
+- **⚠️ Always check current branch before generating new content**: Before creating, modifying, or generating any new files or content, check if the user is on the `main` branch using `git branch --show-current`.
+- **If on `main` branch**: When the user is on `main` and you are about to generate new content or make changes:
+  1. **STOP**: Do not proceed with any changes or file modifications.
+  2. **Determine user initials**: Check git config (`git config user.name` and `git config user.email`) or use the workspace username to map to initials using the mapping above.
+  3. **Propose a branch name**: Based on the changes being made, suggest a branch name following the format `<initials>_<abbreviated_description>` where:
+     - `<initials>` matches one of the mappings above (je, es, nb, ahs)
+     - `<abbreviated_description>` is a short, descriptive name using underscores (not hyphens) that indicates what's changing
+     - Examples: `je_update_cursor_rules`, `es_fix_terraform_module`, `nb_add_monitoring_config`
+  4. **⚠️ CRITICAL: Ask for explicit permission**: You MUST ask the user for permission before creating the branch. Use this exact format: "You're currently on `main`. I recommend creating a branch named `<proposed_branch_name>`. May I create it with `git switch -c <proposed_branch_name>`?"
+  5. **⚠️ CRITICAL: Wait for explicit approval**: Do NOT create the branch. Do NOT proceed with any changes. Do NOT modify any files. You must wait until the user explicitly approves (e.g., "yes", "go ahead", "create it", etc.). If the user does not approve or asks you to use a different branch name, respect their decision.
+  6. **Only after explicit approval**: Once the user has explicitly approved, then and only then may you create the branch using `git switch -c <branch_name>` and proceed with the changes.
+- **If not on `main`**: Proceed normally with generating content or making changes on the current branch.
+
+### Commit Practices
+
+- **Commit early and often**: Make frequent commits, especially after:
+  - Significant logical changes (e.g., completing a component configuration)
+  - Large numbers of file changes
+  - Fixing a specific issue or bug
+  - Reaching a working state that you want to preserve
+- **Write meaningful commit messages**: Commit messages should clearly describe what changed and why.
+  - Good: `Add EFS storage class configuration for EKS cluster`
+  - Bad: `Updates` or `Fix stuff`
+  - Use present tense, imperative mood: "Add feature" not "Added feature" or "Adds feature"
+- **Keep commits focused**: Each commit should represent, as much as possible, a single logical change. If you find yourself writing "and" in your commit message, consider splitting into multiple commits.
+
+### Pull Request Workflow
+
+- **Create pull requests for all changes**: Even small changes should go through PR review.
+- **Keep PRs focused and reviewable**:
+  - Aim for smaller, focused PRs rather than large monolithic changes
+  - If a PR grows too large, consider splitting it into multiple PRs
+- **Update PR descriptions**: Clearly describe what changed, why it changed, and any testing performed.
+- **Address review feedback**: Respond to comments, make requested changes, and re-request review when ready.
+- **Keep PRs up to date**: Regularly rebase or merge `main` into your branch to avoid conflicts and keep the PR current.
+
+### Additional Git Best Practices
+
+- **Use `.gitignore` appropriately**: Don't commit sensitive files, local state files, or temporary files.
+- **Review your changes before committing**: Use `git diff` and `git status` to review what you're about to commit.
+- **Don't commit generated files**: Only commit source files, not generated artifacts (unless they're intentionally tracked).
+- **Use `git stash` for temporary work**: If you need to switch branches but have uncommitted work, use `git stash` to save it temporarily.
+- **Clean up merged branches**: After your PR is merged, delete the branch locally and remotely:
+  ```bash
+  git switch main
+  git pull origin main
+  git branch -d je_your_branch_name
+  git push origin --delete je_your_branch_name
+  ```
+
+## Atmos and Terraform
+
+- We use the Cloud Posse tool `atmos` to structure and execute modular Terraform across multiple "stages" such sandbox, otto (automation), dev (development), staging, and prod (production).
+
+- When providing how-to-install instructions please recommend `atmos` or `atmos terraform` invocations. Do not expect or assume that pure `terraform` runs will suitably set context.
+
+### Common Atmos Terraform Commands
+
+- **Plan changes**: `atmos terraform plan <component> -s <stack>` or `atf plan <component> -s <stack>`
+  - Example: `atf plan eks/cluster -s platform-use1-sandbox`
+- **Apply changes**: `atmos terraform apply <component> -s <stack>` or `atf apply <component> -s <stack>`
+  - Example: `atf apply eks/cluster -s platform-use1-staging`
+- **Deploy (init + plan + apply)**: `atmos terraform deploy <component> -s <stack>` or `atf deploy <component> -s <stack>`
+  - Example: `atf deploy echo-server -s platform-use1-sandbox`
+  - This is the preferred method for deploying components as it ensures proper initialization
+- **Destroy resources**: `atmos terraform destroy <component> -s <stack>` or `atf destroy <component> -s <stack>`
+  - Example: `atf destroy echo-server -s platform-use1-sandbox`
+- **Get outputs**: `atmos terraform output <component> -s <stack>` or `atf output <component> -s <stack>`
+  - Example: `atf output ec2-client-vpn -s core-use1-network`
+- **Workspace management**: `atmos terraform workspace <component> -s <stack>`
+  - Used internally by Spacelift and other automation tools
+- **Describe stacks**: `atmos describe stacks` or `atmos describe stacks --components=<component>`
+  - Useful for understanding stack configurations and component relationships
+
+### Atmos Helmfile Commands
+
+- **Diff Helm releases**: `atmos helmfile diff <component> -s <stack>`
+  - Example: `atmos helmfile diff metrics-server -s platform-use1-staging`
+- **Apply Helm releases**: `atmos helmfile apply <component> -s <stack>`
+  - Example: `atmos helmfile apply metrics-server -s platform-use1-staging`
+
+### Atmos Workflows
+
+- Workflows are defined in `stacks/workflows/` and orchestrate multiple component deployments in order
+- **Run a workflow**: `atmos workflow <workflow-name> -s <stack>` (some workflows don't require `-s`)
+  - Example: `atmos workflow create-cluster -s platform-use1-sandbox`
+  - Example: `atmos workflow apply-all` (networking workflow, no stack required)
+- Common workflows include:
+  - `create-cluster`: Creates an empty EKS cluster with EFS
+  - `apply-all`: Applies all components in a workflow (networking, aws-teams, etc.)
+  - Workflows ensure proper dependency ordering (e.g., VPCs before Transit Gateway spokes)
+
+## AWS Regions and Stages
+
+- We primarily use AWS `us-east-1` (Virginia) resources. We abbreviate this as `use1`. However we are currently configured to also work in `use2` (`us-east-2` in Ohio, our secondary or DR site) and `usw2` (`us-west-2` in Oregon, a tertiary site) AWS regions.
+
+- We often speak of stages informally ("do this in dev") but `atmos` requires specifying the AWS Organizational Unit (OU) and Region as well. For example `atf plan eks/cluster -s platform-use1-sandbox`. `sandbox`, `dev`, `staging`, and `prod` are generally shorthands that omit the `platform-use1-` prefixes. `otto` means `core-use1-otto`. However when crafting command line invocations, stages must be completely spelled out.
+
+### Stage Naming Conventions
+
+**Full Stack Format**: `<namespace>-<region>-<stage>` or `<namespace>-<tenant>-<region>-<stage>`
+
+**Platform Environments** (application workloads):
+- `platform-use1-sandbox` - Learning/experimentation environment
+- `platform-use1-dev` - Development environment (hosts preview and QA)
+- `platform-use1-staging` - Pre-production testing environment
+- `platform-use1-prod` - Production environment
+- `platform-use2-prod` - DR/secondary production (nickname: `dr`)
+
+**Core Environments** (infrastructure/automation):
+- `core-use1-otto` - CI/CD automation hub (nickname: `otto`)
+- `core-use1-network` - Transit Gateway and VPN hub
+- `core-gbl-identity` - AWS SSO and identity management
+- `core-gbl-root` - Root account operations
+- `core-gbl-dns` - Centralized Route53 management
+- `core-gbl-artifacts` - Build artifacts storage
+
+**Stage Nicknames** (for `set-clus` and informal discussion):
+- `sandbox` → `platform-use1-sandbox`
+- `dev`, `develop`, `development` → `platform-use1-dev`
+- `stage`, `staging` → `platform-use1-staging`
+- `prod`, `production` → `platform-use1-prod`
+- `dr` → `platform-use2-prod`
+- `otto` → `core-use1-otto`
+
+**Important**: When using `atmos` commands, you MUST use the full stack name (e.g., `platform-use1-sandbox`), not the nickname. Nicknames only work with helper functions like `set-clus`.
+
+## Kubernetes
+
+- Before `kubectl` commands can be run, the suitable cluster context must be set. `set-cluster platform-use1-prod` for example. You may also use our shorthand `set-clus prod` (along with the other stage nicknames.)
+
+### Setting Cluster Context
+
+- **Full command**: `set-cluster <full-cluster-name>`
+  - Example: `set-cluster platform-use1-prod`
+  - Downloads kubeconfig from EKS and sets `KUBECONFIG` environment variable
+- **Shorthand**: `set-clus <nickname>` (automatically sets preferred namespace)
+  - Example: `set-clus prod` → sets cluster to `platform-use1-prod` and namespace to `app`
+  - Example: `set-clus otto` → sets cluster to `core-use1-otto` and namespace to `actions-runner-system`
+  - Run `set-clus` without arguments to see available clusters
+- **Manual method** (if needed):
+  ```bash
+  eks-update-kubeconfig platform-use1-dev
+  export KUBECONFIG=/conf/.kube/kubecfg.3p-platform-use1-dev-admin
+  ```
+
+### Common Kubernetes Commands
+
+- **Set namespace**: `kubens <namespace>` (e.g., `kubens app`, `kubens default`)
+- **List pods**: `kubectl get pods -A` (all namespaces) or `kubectl get pods` (current namespace)
+- **Watch pods**: `kubectl get pods -A --watch`
+- **Describe resources**: `kubectl describe <resource> <name>` (e.g., `kubectl describe pod my-pod`)
+- **Get logs**: `kubectl logs -n <namespace> <pod-name>` or `kubectl logs -f <pod-name>` (follow)
+- **Exec into pod**: `kubectl exec -ti <pod-name> -- /bin/bash` (or `/bin/sh` if bash unavailable)
+- **Delete pod**: `kubectl delete pod/<pod-name>` (note: pods may be recreated by deployments)
+
+### Kubernetes Helper Functions
+
+We have several custom helper functions available in the Geodesic shell:
+- **`kexec <pod-pattern>`**: Simplified exec that finds pods by partial name and handles namespace automatically
+- **`kkill <pod-names>`**: Simplified pod deletion with proper cleanup
+- **`oddpod`**: Lists pods in non-normal states (Error, Pending, CrashLoopBackOff, etc.)
+- **`kubens <namespace>`**: Switch to a namespace (sets current namespace context)
+- **`apppod`**: Colorized view of pods in app namespaces grouped by release tags
+- **`check-deploy`**: Diagnostic tool for Helm deployment issues and history
+- **`term-dx`**: Diagnose why namespaces, CRDs, pods, services, PVCs, etc. are stuck in Terminating (finalizers, dependents, API services)
+- **`knode`**: CLI to list and cordon/drain EKS nodes
+
+### Helm Commands
+
+- **List releases**: `helm list -A` (all namespaces)
+- **Get values**: `helm get values <release-name>` (in current namespace)
+- **Debug Helm config**: Useful for cross-referencing against `helm-release` Terraform components
+
+## Version Constraints
+
+- We are currently using Atmos version 1.83.0, Terraform v1.5.5, and EKS and kubectl v1.29.15. Do not make plans that require features from later Atmos, Terraform, OpenTofu (Terraform fork not currently in use), or Kubernetes/EKS versions. The infrastructure repo similarly relies on a wide variety of Terraform providers, Cloud Posse modules, and other dependencies. If a feature or capability of a later version would improve our situation or fix a blockage, please mention it. However this would be primarily informational and a recommendation. Try to implement using the current tools and dependencies unless specifically requested to assist with upgrades.
+
+- Human developer assent should be requested before moving to later dependencies. In the real world, dependency resolution is VERY HARD and there are often unforeseen consequences and unintended side-effects of dependency updates that require careful evaluation and navigation.
+
+## Anti-Patterns and Common Mistakes
+
+### Terraform/Atmos Anti-Patterns
+
+- **❌ Running pure `terraform` commands**: Never run `terraform plan`, `terraform apply`, etc. directly. Always use `atmos terraform` (or `atf`) to ensure proper context, backend configuration, and workspace selection.
+- **❌ Using stage nicknames in atmos commands**: Don't use `-s dev` or `-s prod` in atmos commands. Always use full stack names like `-s platform-use1-dev` or `-s platform-use1-prod`.
+- **❌ Skipping `plan` before `apply`**: Always run `atf plan` before `atf apply` to review changes, especially in production environments.
+- **❌ Using `apply` instead of `deploy`**: Prefer `atf deploy` over `atf apply` as it ensures proper initialization (`terraform init`) before planning and applying.
+- **❌ Running workflows without understanding dependencies**: Workflows orchestrate multiple components in order. Review workflow definitions in `stacks/workflows/` before running them to understand what will be deployed.
+- **❌ Destroying resources without checking dependencies**: Always check what other components depend on a resource before destroying it. Use `atmos describe stacks` to understand relationships.
+
+### Kubernetes Anti-Patterns
+
+- **❌ Running kubectl without setting cluster context**: Always run `set-cluster` or `set-clus` before kubectl commands. Running kubectl against the wrong cluster can cause serious issues.
+- **❌ Not checking current namespace**: Use `-n <namespace>` options or `-A` for all namespaces. You may also use `kubens` to set and verify your namespace context (though explicit setting in each command is preferred). Commands like `kubectl get pods` only show pods in the current namespace unless you use `-A`.
+- **❌ Deleting pods without understanding controllers**: Pods managed by Deployments, StatefulSets, or other controllers will be recreated. Understand what's managing the pod before deletion.
+- **❌ Running destructive commands in production without verification**: Always verify you're in the correct cluster and namespace before running destructive commands. The prompt should show your cluster name when context is set correctly.
+- **❌ Using kubectl commands that bypass Terraform**: For resources managed by Terraform (most things in our clusters), make changes via Terraform, not directly via kubectl. Direct kubectl changes will be overwritten on the next Terraform apply.
+
+### Git/GitHub Anti-Patterns
+
+- **❌ Committing directly to `main`**: Never commit directly to the main branch. Always create a feature branch.
+- **❌ Using generic branch names**: Don't use names like `fix`, `update`, or `changes`. Use the initials prefix convention (e.g., `je_add_feature_name`).
+- **❌ Large, infrequent commits**: Don't wait until everything is done to commit. Commit frequently to preserve your work and make reviews easier.
+- **❌ Vague commit messages**: Avoid messages like "fix" or "update". Be specific about what changed and why.
+- **❌ Committing without testing**: Don't commit changes that break existing functionality. Test your changes and let pre-commit hooks run.
+- **❌ Force pushing to shared branches**: Never force push to `main` or branches that others might be using. Force push only to your own feature branches if necessary.
+- **❌ Committing sensitive data**: Never commit secrets, API keys, passwords, or other sensitive information. Use AWS Parameter Store or other secret management tools.
+- **❌ Ignoring merge conflicts**: Don't leave merge conflicts unresolved. Resolve them properly before completing your PR.
+
+### General Anti-Patterns
+
+- **❌ Making changes in production without testing in sandbox**: Always test changes in `platform-use1-sandbox` first.
+- **❌ Assuming VPN connection**: Many operations require VPN access. Ensure you're connected before attempting cluster or AWS operations.
+- **❌ Ignoring pre-commit hooks**: This repo uses pre-commit hooks for Terraform formatting and validation. Don't bypass them; fix formatting issues instead.

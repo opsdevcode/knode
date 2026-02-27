@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# When writing bash scripts
+
+- Prefer the shebang `#!/usr/bin/env bash` over `#!/bin/bash` and other alternatives
+- Use 2 newlines before function definitions, just like in Python
+- Use the `function` keyword, not an implicit definition

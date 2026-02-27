@@ -1,0 +1,107 @@
+---
+description: Guidelines for reviewing pull requests. Auto-activates when the user mentions reviewing a PR, PR review, code review, or checking a pull request.
+globs:
+alwaysApply: false
+---
+
+# Pull Request Review
+
+## Checking Out a PR
+
+To review a PR locally, check out its branch:
+
+```bash
+gh pr checkout <number>
+```
+
+This fetches the PR branch and switches to it. To return to your previous branch afterward:
+
+```bash
+git switch -
+```
+
+If the user provides a PR number or URL, offer to check it out so they can browse the code in the editor. Stash or commit any uncommitted work first to avoid conflicts.
+
+## Getting PR Context
+
+1. **Fetch the PR** using `gh pr view <number> --json title,body,files,commits,reviews,labels` or `gh pr diff <number>`.
+2. **Read changed files** to understand the full context, not just the diff.
+3. **Check CI status** with `gh pr checks <number>`.
+
+## Review Checklist
+
+### Terraform / Atmos
+
+- **Plan output**: Has the author shared `atmos terraform plan` output? Do additions/changes/destructions match intent?
+- **No new warnings**: Plan output should not introduce new Terraform warnings (deprecations, provider notices, variable caveats). If warnings exist, flag them and determine whether they are pre-existing or introduced by this PR.
+- **State impact**: Will this modify or destroy existing resources? Any risk of downtime?
+- **Stage targeting**: Are stack names correct (`platform-use1-dev`, not `platform-use1-prod` when dev is intended)?
+- **Module pinning**: Are module sources pinned to a specific version or ref, not `main`/`HEAD`?
+- **Provider versions**: Do provider version constraints match repo conventions (Terraform v1.5.5)?
+- **Variable validation**: Are new variables properly typed, described, and defaulted?
+- **Outputs**: Are new outputs exposed when downstream components need them?
+
+### Kubernetes / Helm
+
+- **Resource limits**: Do new pods/containers specify CPU and memory requests and limits?
+- **Namespace scoping**: Are resources deployed to the correct namespace?
+- **RBAC**: Are permissions scoped to least privilege?
+- **Health checks**: Do new deployments include liveness and readiness probes?
+
+### Python
+
+- **CLI consistency**: Do new CLI tools use Click (consistent with knode, term-dx, atx, etc.)?
+- **Error handling**: Are exceptions caught and surfaced with clear messages, not raw tracebacks for end users?
+- **Subprocess calls**: Are external commands (`kubectl`, `aws`) invoked safely? Prefer list form over shell=True.
+- **Dependencies**: Are new packages added to `requirements.txt` or `pyproject.toml` with pinned versions?
+- **Tests**: Do new CLI tools (opsdevcode/* repos: knode, term-dx, atx, etc.) include or update tests? Check for `tests/` directories.
+- **Compatibility**: Will the code run in the Geodesic container's Python version? Avoid features that require a newer runtime.
+
+### Bash
+
+- **Shebang**: Scripts should use `#!/usr/bin/env bash`, not `#!/bin/bash` (see `bash-scripting` rule).
+- **Error handling**: Do scripts use `set -euo pipefail` (or equivalent guard) to fail on errors?
+- **Quoting**: Are variables properly quoted (`"$var"`, not `$var`) to prevent word splitting and globbing?
+- **Portability**: Do scripts avoid bashisms if they claim `/bin/sh`, or correctly require bash?
+- **Function style**: Are functions defined with the `function` keyword and separated by 2 blank lines (repo convention)?
+- **Idempotency**: Can the script be safely re-run without side effects (especially for setup/config scripts)?
+- **Shellcheck**: Would the script pass `shellcheck`? Watch for common issues: unquoted variables, unused variables, `cd` without error checks.
+
+### Stack Configuration
+
+- **Catalog vs. org overrides**: Are defaults in `stacks/catalog/` with environment-specific overrides in `stacks/orgs/`?
+- **DRY principle**: Is configuration duplicated across stages that should use catalog inheritance?
+- **Component dependencies**: Are `deps` and remote-state references correct?
+
+### Security
+
+- **No secrets in code**: No API keys, passwords, tokens, or credentials committed.
+- **IAM least privilege**: New IAM policies grant only required permissions.
+- **Network exposure**: New security group rules or ingress don't unintentionally open access.
+
+### General
+
+- **PR scope**: Is the PR focused on a single concern, or should it be split?
+- **Commit quality**: Are commits logical and well-described (see `git-commit-pr-messages` rule)?
+- **Documentation**: Are non-obvious changes explained in the PR description or inline?
+- **Rollback**: Could this change be safely reverted if problems arise?
+
+## Providing Feedback
+
+- **Be specific**: Reference file paths and line numbers.
+- **Distinguish severity**: Clearly separate blockers from suggestions and nits.
+- **Suggest fixes**: When flagging an issue, propose a concrete fix when possible.
+- **Acknowledge good work**: Call out well-done aspects, not just problems.
+
+## Using `gh` for Review
+
+```bash
+# Submit a review comment
+gh pr review <number> --comment --body "Review comments here"
+
+# Approve
+gh pr review <number> --approve --body "Looks good — tested plan output in sandbox"
+
+# Request changes
+gh pr review <number> --request-changes --body "See comments on IAM policy scope"
+```
