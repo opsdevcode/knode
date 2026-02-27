@@ -1,0 +1,38 @@
+---
+description: Jira and Atlassian integration. Auto-activates when the user mentions Jira issues, tickets, bugs, stories, epics, sprints, boards, or Atlassian topics.
+globs: 
+alwaysApply: false
+---
+
+# Jira and Atlassian Integration
+
+When the user asks about Jira issues, tickets, projects, or Atlassian-related tasks, use the **atlassian** MCP server tools. The Jira and Confluence skills at `.cursor/skills/jira/SKILL.md` and `.cursor/skills/confluence/SKILL.md` provide detailed guidance -- read them when handling Atlassian requests.
+
+## MCP Server
+
+The `atlassian` MCP server is configured in `.cursor/mcp.json` and provides tools for both Jira and Confluence. Use `ListMcpResources` to discover available tools if needed.
+
+## Jira Conventions
+
+- **Primary project key**: `PLAT` (platform/infrastructure work)
+- Always include issue keys (e.g. `PLAT-123`) and direct links in responses
+- When searching, default to the current user's open issues unless told otherwise
+- Use JQL for advanced searches (e.g. `project = PLAT AND status = "In Progress" AND assignee = currentUser()`)
+
+## Workflow
+
+1. **Search before create** -- check for duplicates or related issues before creating new ones
+2. **Be specific** -- include project key, issue type, summary, and description when creating issues
+3. **Link related work** -- when working on infrastructure changes, offer to link or update related Jira issues
+4. **Transition awareness** -- when updating issue status, use the project's workflow transitions (e.g. To Do -> In Progress -> In Review -> Done)
+
+## Common Tasks
+
+| User says | Action |
+|-----------|--------|
+| "my issues", "my tickets" | Search for current user's open issues |
+| "bugs in PLAT" | JQL search: `project = PLAT AND type = Bug AND status != Done` |
+| "create a story" | Create issue with type Story in specified project |
+| "update PLAT-123" | Update the specified issue fields |
+| "move PLAT-123 to In Progress" | Transition the issue |
+| "link to confluence" | Link Jira issue to Confluence page |

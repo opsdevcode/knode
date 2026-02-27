@@ -1,0 +1,68 @@
+---
+description: Team member names, nicknames, and user IDs across platforms
+alwaysApply: true
+---
+
+# Team Identities
+
+Use this mapping to translate names, nicknames, and user IDs when reading or writing content. Use the form required by each medium (e.g. `@Full Name` on Jira, at least the first time mentioned). First names are suitable thereafter, if unambiguous.
+
+## Jonathan Eunice
+
+- **Initials**: JE, JSE
+- **Email**: jonathan@example.com
+- **GitHub**: jonathan
+- **Slack**: @Jonathan
+- **Branch prefix**: `je_`
+
+## Eric Skaggs
+
+- **Initials**: ES, ERS
+- **Email**: erskaggs@example.com
+- **GitHub**: erskaggs
+- **Slack**: @eric_scaggs
+- **Branch prefix**: `es_`
+
+## Andrew Schwartz
+
+- **Initials**: AS, AHS
+- **Email**: andrew@example.com
+- **GitHub**: ozydingo
+- **Slack**: @Andrew
+- **Branch prefix**: `ahs_`
+
+## Nathanael Beisiegel
+
+- **Initials**: NB
+- **Email**: Nathanael@example.com
+- **GitHub**: pk-nb
+- **Slack**: @Nathanael
+- **Branch prefix**: `nb_`
+
+## Kerrie McDonagh
+
+- **Initials**: KD, KMcD
+- **Email**: kerrie@example.com
+- **Slack**: @Kerrie
+
+## Nicholas Badavinac
+
+- **Nickname**: Nick B
+- **Initials in context**: NB (when disambiguating from Nathanael)
+- **Email**: nbadavinac@example.com
+- **GitHub**: Nbadavinac
+- **Slack**: @Nick B
+
+## Dan Caddigan
+
+- **Nickname**: Caddy
+- **Email**: caddy@example.com
+- **GitHub**: goldcaddy77
+- **Slack**: @Caddy
+
+## Platform-Specific Formats
+
+- **Jira**: Use full name format (e.g. @Jonathan Eunice) at least on first mention
+- **Slack**: Use handle format (e.g. @Jonathan, @eric_scaggs)
+- **GitHub**: Use username (e.g. jonathan, erskaggs)
+- **Email**: Use address (e.g. jonathan@example.com)

@@ -1,0 +1,208 @@
+---
+description: Guidelines for drafting Git commit messages and PR comments
+globs:
+alwaysApply: true
+---
+
+# Git Commit Messages and PR Comments
+
+## Pull Request Comments
+
+**PR comments must follow the template** defined in `.github/PULL_REQUEST_TEMPLATE.md`. The template includes:
+
+### Required Sections
+
+1. **what**: High-level description of what changed (plain English, bullet points)
+2. **why**: Justifications and reasons for the changes (business case, problem being solved)
+3. **stewardship and housekeeping**: Testing approach, documentation updates, breaking changes, surprising behavior
+4. **references**: Links to GitHub issues, Jira tickets, or helpful documentation
+   - Use `closes #123` for GitHub issues
+   - Use `closes JIRA-123` for Jira tickets
+   - See **Jira and Atlassian References** below for ticket ID formats and URL usage
+
+### Jira and Atlassian References
+
+References may appear as **ticket IDs** (e.g. `PLAT-684`, `INFOSEC-123`, `ESC-456`) or **Atlassian Cloud URLs** (e.g. `https://your-domain.atlassian.net/browse/PLAT-684`). Treat these as **equivalent and interchangeable**.
+
+- **Commit messages**: Prefer the textual ticket ID (e.g. `PLAT-506`, `closes PLAT-684`). Plain text is concise and survives copy-paste.
+- **PR reference sections**: Prefer full Markdown link format: `[PLAT-684](https://your-domain.atlassian.net/browse/PLAT-684)`. Links are clickable and provide direct access.
+- **Common project prefixes**: PLAT, INFOSEC, ESC, or similar `PROJECT-NNN` formats. Use the ID or URL as provided; they refer to the same work item.
+
+**PR references section example:**
+```markdown
+## references
+
+- [PLAT-684](https://your-domain.atlassian.net/browse/PLAT-684)
+- [INFOSEC-123](https://your-domain.atlassian.net/browse/INFOSEC-123)
+```
+
+### PR Comment Guidelines
+
+- **Be concise**: The template prompts explore various elements, but verbosity in the template doesn't require verbosity in your PR. Only mention what's relevant.
+- Use bullet points for conciseness
+- Be clear and specific about what changed and why
+- **Omit empty sections**: If there are no breaking changes, no surprising behavior, no testing needed, etc., simply omit those points rather than explicitly stating "no breaking changes" or "no testing required"
+- Include testing information only if testing was performed or is relevant
+- Mention breaking changes only if they exist
+- Link to related issues or documentation when relevant
+- **AI assistant usage**: If Cursor, Claude Code, or other AI assistants were used extensively in creating the PR, mention this in the stewardship section (e.g., "Created with Cursor (Composer 1)" or "Assisted by Claude Code"). Include the specific model name if known.
+
+## Commit Messages
+
+**Commit messages should be concise** and focus on what changed. Unlike PR messages which follow a formal template, commit messages use a more natural, bulleted format that combines what is being done and why (if the why isn't obvious).
+
+### Conventional Commits (Recommended)
+
+Following the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) is **often desirable** (a mitzvah), especially the `<type>(<scope>): <description>` format. Common types include:
+
+- `fix:` - patches a bug
+- `feat:` - introduces a new feature
+- `chore:` - maintenance tasks, dependency updates, etc.
+- `docs:` - documentation changes
+- `refactor:` - code refactoring without changing functionality
+- `test:` - adding or updating tests
+- `ci:` - CI/CD changes
+- `build:` - build system changes
+
+**Note**: While Conventional Commits format is recommended, our commits do **not** need to strictly adhere to the specification. Use it when it makes sense, but don't force it if it doesn't fit naturally.
+
+### Commit Message Structure
+
+**Conventional Commits format (recommended):**
+```
+<type>(<scope>): <description> (50-72 characters, imperative mood)
+
+- Bulleted list of changes
+- Combine what and why naturally (only include why if not obvious)
+- Additional context if needed
+```
+
+**Traditional format (also acceptable):**
+```
+<subject line> (50-72 characters, imperative mood)
+
+- Bulleted list of changes
+- Combine what and why naturally (only include why if not obvious)
+- Additional context if needed
+```
+
+### Commit Message Guidelines
+
+- **Subject line**:
+  - Use imperative mood ("Add feature" not "Added feature" or "Adds feature")
+  - Keep to 50-72 characters
+  - Capitalize first letter
+  - No period at the end
+  - Be specific and descriptive
+
+- **Body** (optional, for more complex changes):
+  - Use bulleted list format (not formal `what:`/`why:` sections)
+  - Combine what is being done and why naturally in each bullet point
+  - Only include "why" if it's not obvious from the change itself
+  - Keep concise - commit messages are shorter than PR descriptions
+  - Omit detailed testing/docs unless critical
+  - Can include references if closing issues: `closes #123`
+
+- **When to use detailed body**:
+  - Multiple related changes that benefit from bulleted list
+  - Complex changes that need explanation
+  - Changes that aren't self-explanatory
+  - Breaking changes or important context
+
+### Examples
+
+**Simple commit (subject line only) - Traditional format:**
+```
+Add EFS storage class configuration for EKS cluster
+```
+
+**Simple commit (subject line only) - Conventional Commits format:**
+```
+feat(eks): add EFS storage class configuration
+```
+
+**Commit with body (for more context) - Traditional format:**
+```
+Fix VPC CIDR allocation issue in dev environment
+
+- Updated VPC CIDR calculation to prevent overlap with existing subnets
+- Resolves VPC creation failures in dev environment due to CIDR conflicts
+
+closes #456
+```
+
+**Commit with body (for more context) - Conventional Commits format:**
+```
+fix(vpc): resolve CIDR allocation issue in dev environment
+
+- Updated VPC CIDR calculation to prevent overlap with existing subnets
+- Resolves VPC creation failures in dev environment due to CIDR conflicts
+
+closes #456
+```
+
+**Commit with detailed body (for complex changes) - Traditional format:**
+```
+Refactor Terraform module structure for better reusability
+
+- Split monolithic eks/cluster component into smaller modules
+- Improves maintainability and enables component reuse across stacks
+
+BREAKING CHANGE: Stack configurations must be updated to reference new module paths
+```
+
+**Commit with detailed body (for complex changes) - Conventional Commits format:**
+```
+refactor(terraform): split eks/cluster into smaller modules
+
+- Split monolithic eks/cluster component into smaller modules
+- Improves maintainability and enables component reuse across stacks
+
+BREAKING CHANGE: Stack configurations must be updated to reference new module paths
+```
+
+**Commit with multiple changes:**
+```
+docs(cursor): add AWS/K8s access and git message rules
+
+- Added rule requiring bash3p connector for AWS/Kubernetes access
+- Added rule for drafting commit messages and PR comments following templates
+- Establishes clear guidance for AI assistants on proper access methods and formatting
+
+```
+
+**Commit with Jira reference (prefer ticket ID in commits):**
+```
+docs: add dev environment resource analysis
+
+- Catalog QA/PR env resource usage and recommendations
+- Include MNG resize guidance for 7–8 environments
+
+closes PLAT-684
+```
+
+**Other Conventional Commits examples:**
+```
+docs: update bash3p connector documentation
+chore(deps): update terraform provider versions
+test(eks): add unit tests for cluster module
+ci: add pre-commit hook for terraform formatting
+```
+
+## Relationship Between Commits and PRs
+
+- **Commits**: Use natural, bulleted format combining what and why (if not obvious). Focus on individual logical changes, be concise.
+- **PRs**: Must follow the formal template with explicit `what:`, `why:`, `stewardship and housekeeping`, and `references` sections. However, be concise - only include information that's relevant. Don't explicitly state the absence of things (e.g., don't say "no breaking changes" if there aren't any - just omit it).
+- A PR may contain multiple commits, each with their own concise commit message
+- The PR description should summarize all commits and provide the full context following the formal template structure, but keep it concise and relevant
+
+## Best Practices
+
+- **Write clear, descriptive messages**: Future you (and others) will thank you
+- **Use present tense, imperative mood**: "Add feature" not "Added feature"
+- **Be specific**: "Fix authentication bug" not "Fix bug"
+- **Keep commits focused**: One logical change per commit
+- **Use bulleted lists in commit bodies**: Combine what and why naturally, only include why if not obvious
+- **PRs use formal template**: PR descriptions must follow the template with explicit `what:`, `why:`, etc. sections
+- **Link issues when relevant**: Use `closes #123` or `closes PLAT-684` in commit messages; use `[PLAT-684](https://your-domain.atlassian.net/browse/PLAT-684)` in PR reference sections. Ticket IDs and Atlassian URLs are interchangeable.
+- **Consider Conventional Commits format**: Using `<type>(<scope>): <description>` is often desirable, especially for `fix:`, `feat:`, `chore:`, and `docs:` types, but not strictly required

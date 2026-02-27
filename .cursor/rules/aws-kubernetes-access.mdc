@@ -1,0 +1,66 @@
+---
+description: Rules for accessing AWS infrastructure and Kubernetes clusters via bash3p connector
+globs:
+alwaysApply: true
+---
+
+# AWS and Kubernetes Access Rules
+
+## Direct Access Restriction
+
+**❌ Commands cannot be run directly from this workstation** to access AWS infrastructure or Kubernetes clusters. Our AWS resources and Kubernetes clusters are not directly accessible from local development workstations where Cursor runs.
+
+## Required Access Method
+
+All commands that interact with AWS infrastructure or Kubernetes clusters **must** be executed via the **bash3p connector**, which runs commands inside the Geodesic Docker container (`3p`) that has the necessary permissions, roles, network connections, and dependencies pre-configured.
+
+## Documentation Reference
+
+**📖 Important**: See `./docs/bash3p.md` for complete information on:
+
+- **How to run commands via the bash3p connector**: The `bash3p` script enables execution of commands inside the running `3p` Geodesic container
+- **How to authenticate properly**: AWS SSO authentication, profile selection (`AWS_PROFILE`), and role assumption
+- **How to submit requests to those environments**: Setting cluster context, combining commands, and proper command chaining
+
+## Key Points
+
+- **Always use `bash3p`**: Never attempt to run `kubectl`, `aws`, `terraform`, `atmos terraform`, or related commands directly from the workstation
+- **Transient sessions**: Each `bash3p` invocation creates a new session - combine related commands in a single invocation
+- **Authentication**: Start with minimal AWS_PROFILE (e.g., `AWS_PROFILE=staging`), only escalate to admin-level profiles (e.g., `AWS_PROFILE=3p-platform-gbl-staging-admin`) if lower-level credentials are insufficient. bash3p often provides sufficient permissions even without explicit AWS_PROFILE.
+- **Cluster context**: When using kubectl, combine `set-clus` with commands in one invocation: `bash3p "set-clus dev; kubectl get pods -A"`
+- **Use full command names**: When chaining commands, use full names (`kubectl`, `terraform`) instead of aliases (`k`, `tf`) as aliases may not expand correctly in chained commands
+- **Testing updated scripts**: When you modify scripts under `rootfs/`, the updated version is available in the container at the same path. To test the updated version, use the full path: `rootfs/usr/local/bin/script-name` (relative, no leading slash) or `/localhost/wa/infrastructure/rootfs/usr/local/bin/script-name` (absolute). Running the script by name alone (e.g., `check-deploy`) will execute the version already installed in the container's PATH, not your updated version.
+
+## Examples
+
+```bash
+# ✅ Correct: Use bash3p for AWS commands (start with minimal profile)
+bash3p AWS_PROFILE=staging set-clus staging; aws eks list-clusters
+
+# ✅ Correct: Escalate to admin profile only if needed
+bash3p AWS_PROFILE=3p-platform-gbl-dev-admin aws eks list-clusters
+
+# ✅ Correct: Use bash3p for Kubernetes commands (combine set-clus)
+bash3p "set-clus dev; kubectl get pods -A"  # Often works without AWS_PROFILE
+
+# ✅ Correct: Use bash3p for Terraform/Atmos commands
+bash3p atmos terraform plan eks/cluster -s platform-use1-dev
+
+# ✅ Correct: Test updated script from rootfs using full path
+bash3p "set-clus staging; rootfs/usr/local/bin/check-deploy"
+
+# ✅ Correct: Test updated script using absolute path
+bash3p "set-clus staging; /localhost/wa/infrastructure/rootfs/usr/local/bin/check-deploy"
+
+# ❌ Incorrect: Direct execution from workstation
+kubectl get pods -A  # Won't work - no direct access
+aws eks list-clusters  # Won't work - no direct access
+
+# ❌ Incorrect: Testing updated script by name alone
+bash3p "set-clus staging; check-deploy"  # Runs old version from PATH, not your updated file
+
+# ❌ Possibly incorrect: Using admin profile when not needed
+bash3p AWS_PROFILE=3p-platform-gbl-staging-admin aws eks list-clusters  # Try AWS_PROFILE=staging first
+```
+
+For detailed usage patterns, authentication requirements, troubleshooting, and best practices, refer to `./docs/bash3p.md`.
