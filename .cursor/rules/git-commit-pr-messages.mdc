@@ -22,18 +22,18 @@ alwaysApply: true
 
 ### Jira and Atlassian References
 
-References may appear as **ticket IDs** (e.g. `PLAT-684`, `INFOSEC-123`, `ESC-456`) or **Atlassian Cloud URLs** (e.g. `https://3playmedia.atlassian.net/browse/PLAT-684`). Treat these as **equivalent and interchangeable**.
+References may appear as **ticket IDs** (e.g. `PLAT-684`, `INFOSEC-123`, `ESC-456`) or **Atlassian Cloud URLs** (e.g. `https://your-domain.atlassian.net/browse/PLAT-684`). Treat these as **equivalent and interchangeable**.
 
 - **Commit messages**: Prefer the textual ticket ID (e.g. `PLAT-506`, `closes PLAT-684`). Plain text is concise and survives copy-paste.
-- **PR reference sections**: Prefer full Markdown link format: `[PLAT-684](https://3playmedia.atlassian.net/browse/PLAT-684)`. Links are clickable and provide direct access.
+- **PR reference sections**: Prefer full Markdown link format: `[PLAT-684](https://your-domain.atlassian.net/browse/PLAT-684)`. Links are clickable and provide direct access.
 - **Common project prefixes**: PLAT, INFOSEC, ESC, or similar `PROJECT-NNN` formats. Use the ID or URL as provided; they refer to the same work item.
 
 **PR references section example:**
 ```markdown
 ## references
 
-- [PLAT-684](https://3playmedia.atlassian.net/browse/PLAT-684)
-- [INFOSEC-123](https://3playmedia.atlassian.net/browse/INFOSEC-123)
+- [PLAT-684](https://your-domain.atlassian.net/browse/PLAT-684)
+- [INFOSEC-123](https://your-domain.atlassian.net/browse/INFOSEC-123)
 ```
 
 ### PR Comment Guidelines
@@ -204,5 +204,5 @@ ci: add pre-commit hook for terraform formatting
 - **Keep commits focused**: One logical change per commit
 - **Use bulleted lists in commit bodies**: Combine what and why naturally, only include why if not obvious
 - **PRs use formal template**: PR descriptions must follow the template with explicit `what:`, `why:`, etc. sections
-- **Link issues when relevant**: Use `closes #123` or `closes PLAT-684` in commit messages; use `[PLAT-684](https://3playmedia.atlassian.net/browse/PLAT-684)` in PR reference sections. Ticket IDs and Atlassian URLs are interchangeable.
+- **Link issues when relevant**: Use `closes #123` or `closes PLAT-684` in commit messages; use `[PLAT-684](https://your-domain.atlassian.net/browse/PLAT-684)` in PR reference sections. Ticket IDs and Atlassian URLs are interchangeable.
 - **Consider Conventional Commits format**: Using `<type>(<scope>): <description>` is often desirable, especially for `fix:`, `feat:`, `chore:`, and `docs:` types, but not strictly required

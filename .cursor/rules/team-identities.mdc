@@ -10,15 +10,15 @@ Use this mapping to translate names, nicknames, and user IDs when reading or wri
 ## Jonathan Eunice
 
 - **Initials**: JE, JSE
-- **Email**: jonathan@3playmedia.com
-- **GitHub**: jonathan-3play
+- **Email**: jonathan@example.com
+- **GitHub**: jonathan
 - **Slack**: @Jonathan
 - **Branch prefix**: `je_`
 
 ## Eric Skaggs
 
 - **Initials**: ES, ERS
-- **Email**: erskaggs@3playmedia.com
+- **Email**: erskaggs@example.com
 - **GitHub**: erskaggs
 - **Slack**: @eric_scaggs
 - **Branch prefix**: `es_`
@@ -26,7 +26,7 @@ Use this mapping to translate names, nicknames, and user IDs when reading or wri
 ## Andrew Schwartz
 
 - **Initials**: AS, AHS
-- **Email**: andrew@3playmedia.com
+- **Email**: andrew@example.com
 - **GitHub**: ozydingo
 - **Slack**: @Andrew
 - **Branch prefix**: `ahs_`
@@ -34,7 +34,7 @@ Use this mapping to translate names, nicknames, and user IDs when reading or wri
 ## Nathanael Beisiegel
 
 - **Initials**: NB
-- **Email**: Nathanael@3playmedia.com
+- **Email**: Nathanael@example.com
 - **GitHub**: pk-nb
 - **Slack**: @Nathanael
 - **Branch prefix**: `nb_`
@@ -42,21 +42,21 @@ Use this mapping to translate names, nicknames, and user IDs when reading or wri
 ## Kerrie McDonagh
 
 - **Initials**: KD, KMcD
-- **Email**: kerrie@3playmedia.com
+- **Email**: kerrie@example.com
 - **Slack**: @Kerrie
 
 ## Nicholas Badavinac
 
 - **Nickname**: Nick B
 - **Initials in context**: NB (when disambiguating from Nathanael)
-- **Email**: nbadavinac@3playmedia.com
-- **GitHub**: Nbadavinac-3play
+- **Email**: nbadavinac@example.com
+- **GitHub**: Nbadavinac
 - **Slack**: @Nick B
 
 ## Dan Caddigan
 
 - **Nickname**: Caddy
-- **Email**: caddy@3playmedia.com
+- **Email**: caddy@example.com
 - **GitHub**: goldcaddy77
 - **Slack**: @Caddy
 
@@ -64,5 +64,5 @@ Use this mapping to translate names, nicknames, and user IDs when reading or wri
 
 - **Jira**: Use full name format (e.g. @Jonathan Eunice) at least on first mention
 - **Slack**: Use handle format (e.g. @Jonathan, @eric_scaggs)
-- **GitHub**: Use username (e.g. jonathan-3play, erskaggs)
-- **Email**: Use address (e.g. jonathan@3playmedia.com)
+- **GitHub**: Use username (e.g. jonathan, erskaggs)
+- **Email**: Use address (e.g. jonathan@example.com)
