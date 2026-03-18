@@ -28,8 +28,6 @@ Use `-c`/`--captype` with cordon, drain, or cordon-drain to target nodes by capa
 
 ## Installation
 
-Installed in the Geodesic (3p) container via the Dockerfile. To test changes before rebuild, install in a running container:
-
 ```bash
 uv pip install --system /usr/local/share/knode/
 ```
